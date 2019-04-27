@@ -1,0 +1,168 @@
+<html lang="en">
+<head>
+  <meta charset="latin-1"><meta name="format-detection" content="telephone=no" />
+  <meta name="msapplication-tap-highlight" content="no" />
+  <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+  <title>Vel-oiseaux</title>
+
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+  <link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/css/ol.css" type="text/css">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <script src="http://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  
+  <link rel="stylesheet" href="style/perso.css">
+  <script src="script/initCarte.js"></script>
+  <script src="script/initOutils.js"></script>
+  <script src="script/initSelectionCouche.js"></script>
+<script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript">
+        app.initialize();
+    </script>
+  
+  
+  
+  <script>
+var dialog, donnees;
+$(document).ready(function () {
+
+    var btn = $.fn.button.noConflict(); // obligatoire pour corriger conflit jqueryUI et bootstrap
+	$.fn.btn = btn; // obligatoire pour corriger conflit jqueryUI et bootstrap
+		
+		
+	creationCarte();
+	creationBarreOutils();
+	creationSelectionCouche();
+	
+	//Création de l'accordéon
+	$( "#accordion" ).accordion({
+		collapsible:	true,
+		heightStyle:	false,	
+		active:			false
+	});
+	
+	//Bouton qui cache l'accordéon
+	$("#hideacco").click(function(){
+			if ($("#accordion").is(":hidden") == false) {
+				$("#accordion").hide(600);
+			}
+			else{
+				$("#accordion").show(600);
+			}
+	});
+    
+    
+    //Boite de dialogue
+    dialog = $( "#dialog" ).dialog({
+		autoOpen: false,
+      		modal: true,
+		maxHeight: 100,
+		title: "Espèces observées"	
+	});
+    //Oiseaux espèces pour la boite de dialogue
+    $.getJSON('data.json', function(data) {         
+    		donnees=data;
+});
+   }); 
+
+  </script>
+</head>
+<body>
+
+	<!--Création de la carte-->
+	<div id="map"></div>
+     
+
+	<!--Création de l'accordéon-->
+	<div id="accordion" style="width:300px;">
+	  <h3>Couches</h3>
+	  <div id="selectionCouche">
+		<span><font size = "4" color = "blue"><b>Fonds de carte</b></font></span>
+		<div id="base">
+			<input type="radio" id="osm" name="radio" checked="checked">
+				<label for="osm"><font size="2" color="gray">OSM</font></label>
+			</input></br>
+
+			<input type="radio" id="BingMaps" name="radio">
+				<label for="BingMaps"><font size="2" color="gray">BingMaps satellite</font></label>
+			</input>
+		</div>
+		</br>
+		<span><font size = "4" color = "green"><b>Couches</b></font></span>
+		<div id="overlay">
+			<input type="checkbox" id="PisteCyclable" name="checkbox">
+				<label for="PisteCyclabe"><font size="2" color="gray">Piste Cyclables</font></label><img src="http://35.203.109.161/cgi-bin/mapserv?map=/home/linda/ProjetOiseaux/mapfile/principal.map&version=1.3.0&SLD_VERSION=1.1.0&service=wms&request=GetLegendGraphic&layer=PisteCyclable&format=image/png"></br>
+			</input></br>
+
+			<input type="checkbox" id="PisteCyclablewfs" name="checkbox">
+				<label for="PisteCyclablewfs"><font size="2" color="gray">Piste cyclable WFS</font></label></br>
+			</input></br>
+
+            		<input type="checkbox" id="InfraPieton" name="checkbox">
+				<label for="InfraPieton"><font size="2" color="gray">Piste piétonnière</font></label><img src="http://35.203.109.161/cgi-bin/mapserv?map=/home/linda/ProjetOiseaux/mapfile/principal.map&version=1.3.0&SLD_VERSION=1.1.0&service=wms&request=GetLegendGraphic&layer=InfraPieton&format=image/png"></br>
+			</input></br>
+
+			<input type="checkbox" id="Oiseaux" name="checkbox" >
+                		<label for="Oiseaux"><font size="2" color="gray">Sites d'observation d'oiseaux</font></label><img src="http://35.203.109.161/cgi-bin/mapserv?map=/home/linda/ProjetOiseaux/mapfile/principal.map&version=1.3.0&SLD_VERSION=1.1.0&service=wms&request=GetLegendGraphic&layer=oiseaux&format=image/png"></br>
+			</input></br>
+
+            		<input type="checkbox" id="OiseauxWFS" name="checkbox" >
+				<label for="OiseauxWFS"><font size="2" color="gray">Site d'observation d'oiseaux WFS </font></label></br>
+            		</input></br>
+		</div>
+	  </div>
+	  <h3>Information</h3>
+	  <div>
+		<div id="infoPanel">
+		Cliquer sur le site de votre choix
+		</div>
+	  </div>
+	  <h3>Contacts</h3>
+	  <div>
+		<p>
+		Pour plus d'information, visitez le site le web 
+		<a href="https://quebecoiseaux.org/index.php/fr/">Québec Oiseaux</a>
+		</p>
+	  </div>
+
+	</div>
+	
+	<!--Création de la barre d'outil-->
+	<div id="toolbar" >
+		<button id="extent"><span class="ui-icon extent"></span></button>
+		<button id="pan" autofocus=true><span class="ui-icon pan"></span></button>
+		<button id="zoomin"><span class="ui-icon zoomin"></span></button>
+		<button id="info"><span class="ui-icon info"></span></button>
+	</div>
+
+	<!--bouton qui cache l'accordeon-->
+	<div id="hidemenu"><label for="hideacco" ><a title="Menu"><button type="button" id="hideacco"><img src = "icons/layer.png"></button></a></label></div> 
+	
+	<!--position des coordonnées pour la souris-->
+	<div id="mouse-position" style ="position:absolute;bottom:1px; right:150px;font-weight: bold; font-size: 14; color: red;  "></div>
+	<!--création de la boîte de dialogue-->
+	<div id="dialog" title="Basic dialog">
+		<font size="1" face="Courier New" >
+  		<table id="table_donnees" class="ui-widget ui-widget-content">
+    			<thead>
+      				<tr class="ui-widget-header">
+
+        				<th style="width:120">Nom</th>
+        				<th style="width:120">Statut conservation </th>
+					<th style="width:120">Niveau</th>
+      				</tr>
+    			</thead>
+    			<tbody></tbody>
+  		</table>
+		</font>
+	</div>
+
+
+</body>
+
+
+</html>
